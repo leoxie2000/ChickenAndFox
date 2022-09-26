@@ -4,6 +4,7 @@ class FoxProblem:
         self.start_state = start_state
         self.goal_state = (0, 0, 0)
 
+
         # you might want to add other things to the problem,
         #  like the total number of chickens (which you can figure out
         #  based on start_state
@@ -13,7 +14,15 @@ class FoxProblem:
         successor_list = []
         chicken,fox,boat = state[0],state[1],state[2]
         if boat == 1:
-            possible_states = [(chicken-2,fox,0),(chicken-1,fox-1,0),()]
+            possible_states = [(chicken-2,fox,0),(chicken-1,fox-1,0),(chicken-1,fox,0),
+                               (chicken,fox-1,0),(chicken,fox-2,0)]
+        if boat == 0:
+            possible_states = [(chicken+1,fox,1),(chicken+2,fox,1),(chicken+1,fox+1,1),
+                               (chicken, fox+1,1),(chicken,fox+2,1)]
+        for state in possible_states:
+            if self.validify_state(state):
+                successor_list.append(state)
+        return successor_list
 
         # you write this part. I also had a helper function
         #  that tested if states were safe before adding to successor list
@@ -22,6 +31,8 @@ class FoxProblem:
     def validify_state(self, state):
         chicken, fox, boat = state[0], state[1], state[2]
         if chicken < 0 or fox < 0:
+            return False
+        if chicken > self.start_state[0] or fox > self.start_state[1]:
             return False
         if fox > chicken:
             return False
