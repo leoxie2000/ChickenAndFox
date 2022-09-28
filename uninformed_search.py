@@ -23,6 +23,7 @@ def bfs_search(search_problem):
 
     visited = set()
     visited.add(start_node.state)
+    # frontier maintained as a queue to maintain ordering
     while frontier:
         curr_node = frontier.popleft()
         curr_state = curr_node.state
@@ -31,9 +32,7 @@ def bfs_search(search_problem):
             if path:
                 solution.path += path
             return solution
-        # print("curr_State is ", curr_state)
         children = search_problem.get_successors(curr_state)
-        # print("bfs children are ", children)
         for child in children:
             if child not in visited:
                 visited.add(child)
@@ -44,7 +43,7 @@ def bfs_search(search_problem):
 
 
 def backtrack(node):
-    # print("backtracing ", node.state,node.parent.state)
+    # search until there's no more paretns
     path = [node.state]
     while node.parent:
         node = node.parent
@@ -73,13 +72,15 @@ def dfs_search(search_problem, depth_limit=100, node=None, solution=None):
         node = SearchNode(search_problem.start_state)
         solution = SearchSolution(search_problem, "DFS")
     solution.nodes_visited += 1
+    # found the solution
     if node.state == search_problem.goal_state:
         solution.path.append(node.state)
         return solution
+    # base case
     if depth_limit == 0:
         return None
+    # pre order add node
     solution.path.append(node.state)
-    # print("path is ", solution.path)
 
     children = search_problem.get_successors(node.state)
     # print("children ", children)
@@ -87,10 +88,11 @@ def dfs_search(search_problem, depth_limit=100, node=None, solution=None):
         if child in solution.path:
             continue
         next_node = SearchNode(child,node)
+        # recursive with one less depth limit
         res = dfs_search(search_problem, depth_limit-1, next_node, solution)
         if res:
             return solution
-
+    # post order pop node
     solution.path.pop()
     return None
 
@@ -108,6 +110,7 @@ def ids_search(search_problem, depth_limit=100):
     node = SearchNode(search_problem.start_state)
     solution = SearchSolution(search_problem, "IDS")
 
+    # gradually increment the depth as we search
     while depth <= depth_limit:
         res = dfs_search(search_problem, depth, node, solution)
         depth += 1

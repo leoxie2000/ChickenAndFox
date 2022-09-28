@@ -15,7 +15,7 @@ class FoxProblem:
     def get_successors(self, state):
         successor_list = []
         chicken,fox,boat = state[0],state[1],state[2]
-        # print("chicke, fox, boat ", chicken,fox,boat)
+        # hardcodes all the possible states with greedy alg in mind
         if boat == 1:
             possible_states = [(chicken-2,fox,0),(chicken-1,fox-1,0),(chicken-1,fox,0),
                                (chicken,fox-1,0),(chicken,fox-2,0)]
@@ -33,11 +33,11 @@ class FoxProblem:
 
     # I also had a goal test method. You should write one.
     def validify_state(self, state):
-        # print("validifying state ", state)
         original_chicken, original_fox = self.start_state[0], self.start_state[1]
         chicken, fox, boat = state[0], state[1], state[2]
         chicken_across = original_chicken - chicken
         fox_across = original_fox - fox
+        # Only legal if either there's no chicken on one side, or less chicken than foxes
         if 0 <= chicken <= original_chicken and 0 <= fox <= original_fox:
             if chicken == 0 or chicken >= fox:
                 if chicken_across == 0 or chicken_across >= fox_across:
