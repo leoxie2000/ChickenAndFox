@@ -1,4 +1,4 @@
-
+#Author: Yi Leo Xie  Date: 09/28/2022
 from collections import deque
 from SearchSolution import SearchSolution
 
@@ -28,25 +28,32 @@ def bfs_search(search_problem):
         curr_state = curr_node.state
         if curr_state == search_problem.goal_state:
             path = backtrack(curr_node)
-            solution.path += path
-            return path
-
+            if path:
+                solution.path += path
+            return solution
+        # print("curr_State is ", curr_state)
         children = search_problem.get_successors(curr_state)
+        # print("bfs children are ", children)
         for child in children:
             if child not in visited:
                 visited.add(child)
+                solution.nodes_visited+=1
                 next_node = SearchNode(child, curr_node)
                 frontier.append(next_node)
-    return "Abort!abort!mission impossible"
+    return None
 
 
 def backtrack(node):
+    # print("backtracing ", node.state,node.parent.state)
     path = [node.state]
     while node.parent:
         node = node.parent
         path.append(node.state)
+    res = []
+    for i in range(len(path)-1,-1,-1):
+        res.append(path[i])
 
-    return path.reverse()
+    return res
 
 
 
@@ -58,29 +65,35 @@ def backtrack(node):
 # We pass the solution along to each new recursive call to dfs_search
 #  so that statistics like number of nodes visited or recursion depth
 #  might be recorded
-dfspath = []
-dfsres = []
+
 def dfs_search(search_problem, depth_limit=100, node=None, solution=None):
-    global dfspath,dfsres
     # if no node object given, create a new search from starting state
+
     if node == None:
         node = SearchNode(search_problem.start_state)
         solution = SearchSolution(search_problem, "DFS")
+    solution.nodes_visited += 1
     if node.state == search_problem.goal_state:
-        dfsres.append(dfspath.copy())
-        return
+        solution.path.append(node.state)
+        return solution
     if depth_limit == 0:
-        return
-    dfspath.append(node)
+        return None
+    solution.path.append(node.state)
+    # print("path is ", solution.path)
+
     children = search_problem.get_successors(node.state)
+    # print("children ", children)
     for child in children:
+        if child in solution.path:
+            continue
         next_node = SearchNode(child,node)
-        dfs_search(search_problem, depth_limit-1, next_node, solution)
-    dfspath.pop()
-    if dfsres:
-        return solution.path.append(dfsres)
-    else:
-        return "dfs No result"
+        res = dfs_search(search_problem, depth_limit-1, next_node, solution)
+        if res:
+            return solution
+
+    solution.path.pop()
+    return None
+
 
 
 
@@ -90,11 +103,16 @@ def dfs_search(search_problem, depth_limit=100, node=None, solution=None):
 
 
 def ids_search(search_problem, depth_limit=100):
-    global dfspath,dfsres
     # you write this part
     depth = 0
-    dfspath = []
+    node = SearchNode(search_problem.start_state)
+    solution = SearchSolution(search_problem, "IDS")
+
     while depth <= depth_limit:
-        dfs_search(search_problem, depth)
+        res = dfs_search(search_problem, depth, node, solution)
         depth += 1
+        if res:
+            return res
+
+    return None
 
